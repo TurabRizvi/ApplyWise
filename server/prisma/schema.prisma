@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum UserRole {
+  CANDIDATE
+  ADMIN
+}
+
+enum HrRole {
+  ORG_ADMIN
+  RECRUITER
+}
+
+enum ApplicationStatus {
+  WISHLIST
+  APPLIED
+  ASSESSMENT
+  INTERVIEW
+  OFFER
+  ACCEPTED
+  REJECTED
+}
+
+// ─────────────────────────────────────────────
+// CANDIDATE SIDE
+// ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  role          UserRole @default(CANDIDATE)
+  isActive      Boolean  @default(true)
+  failedLoginAttempts Int @default(0)
+  lockedUntil   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile       Profile?
+  resumes       Resume[]
+  applications  JobApplication[]
+  coverLetters  CoverLetter[]
+  aiHistory     AiHistory[]
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName    String
+  bio         String?
+  phone       String?
+  location    String?
+  linkedinUrl String?
+  githubUrl   String?
+  portfolioUrl String?
+  avatarUrl   String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Resume {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  isUploaded  Boolean  @default(false)
+  sourceFileUrl String?
+  extractedText String? // raw text parsed from uploaded PDF, used by AI features
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  education     Education[]
+  experience    Experience[]
+  projects      ResumeProject[]
+  skills        Skill[]
+  certifications Certification[]
+  languages     Language[]
+  aiHistory     AiHistory[]
+
+  @@index([userId])
+}
+
+model Education {
+  id          String   @id @default(uuid())
+  resumeId    String
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  institution String
+  degree      String
+  fieldOfStudy String?
+  startDate   DateTime?
+  endDate     DateTime?
+  description String?
+
+  @@index([resumeId])
+}
+
+model Experience {
+  id          String   @id @default(uuid())
+  resumeId    String
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  company     String
+  role        String
+  startDate   DateTime?
+  endDate     DateTime?
+  isCurrent   Boolean  @default(false)
+  description String?
+
+  @@index([resumeId])
+}
+
+model ResumeProject {
+  id          String   @id @default(uuid())
+  resumeId    String
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  techStack   String?
+  projectUrl  String?
+
+  @@index([resumeId])
+}
+
+model Skill {
+  id       String @id @default(uuid())
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  name     String
+
+  @@index([resumeId])
+}
+
+model Certification {
+  id           String    @id @default(uuid())
+  resumeId     String
+  resume       Resume    @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  name         String
+  issuer       String?
+  issueDate    DateTime?
+
+  @@index([resumeId])
+}
+
+model Language {
+  id       String @id @default(uuid())
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  name     String
+  proficiency String?
+
+  @@index([resumeId])
+}
+
+model JobApplication {
+  id            String            @id @default(uuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName   String
+  position      String
+  jobUrl        String?
+  location      String?
+  salary        String?
+  status        ApplicationStatus @default(WISHLIST)
+  notes         String?
+  dateApplied   DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([userId, status])
+}
+
+model CoverLetter {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String
+  jobTitle   String
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Every AI call is logged: what was sent in, what came back, so we can
+// debug bad outputs later without guessing what the prompt/response was.
+model AiHistory {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumeId   String?
+  resume     Resume?  @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  featureType String  // ATS_ANALYSIS | ATS_REWRITE | INTERVIEW_PREP | COVER_LETTER
+  inputSummary String  // never store full raw prompt with PII long-term beyond need
+  outputSummary String
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([featureType])
+}
+
+// ─────────────────────────────────────────────
+// HR SIDE
+// ─────────────────────────────────────────────
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  hrUsers   HrUser[]
+  screeningBatches ScreeningBatch[]
+}
+
+model HrUser {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  role          HrRole   @default(RECRUITER)
+  organizationId String
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  isActive      Boolean  @default(true)
+  failedLoginAttempts Int @default(0)
+  lockedUntil   DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([email])
+}
+
+// A "batch" groups a job description + the resumes screened against it
+model ScreeningBatch {
+  id             String   @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  jobTitle       String
+  jobDescription String
+  createdAt      DateTime @default(now())
+
+  candidates     ScreenedResume[]
+
+  @@index([organizationId])
+}
+
+model ScreenedResume {
+  id             String   @id @default(uuid())
+  batchId        String
+  batch          ScreeningBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  fileUrl        String
+  extractedText  String
+  candidateName  String?
+  atsScore       Int?
+  matchedSkills  String?  // JSON-encoded array
+  gaps           String?  // JSON-encoded array
+  aiRawResponse  String?
+  createdAt      DateTime @default(now())
+
+  @@index([batchId])
+  @@index([batchId, atsScore])
+}
