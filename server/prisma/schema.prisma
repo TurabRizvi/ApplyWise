@@ -247,6 +247,7 @@ model HrUser {
   failedLoginAttempts Int @default(0)
   lockedUntil   DateTime?
   createdAt     DateTime @default(now())
+  hrRefreshTokens HrRefreshToken[]    
 
   @@index([organizationId])
   @@index([email])
@@ -281,4 +282,16 @@ model ScreenedResume {
 
   @@index([batchId])
   @@index([batchId, atsScore])
+}
+
+model HrRefreshToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  hrUserId  String
+  hrUser    HrUser   @relation(fields: [hrUserId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([hrUserId])
 }

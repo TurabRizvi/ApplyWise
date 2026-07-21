@@ -11,6 +11,8 @@ import {
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./utils/logger";
 import authRoutes from "./routes/authRoutes";
+import hrAuthRoutes from "./routes/hrAuthRoutes";
+import profileRoutes from "./routes/profileRoutes";
 
 const app = express();
 
@@ -35,6 +37,8 @@ app.get("/health", (_req, res) => {
 
 // ── Routes ──
 app.use("/api/auth", authRoutes);
+app.use("/api/hr-auth", hrAuthRoutes);
+app.use("/api/profile", profileRoutes);
 
 // ── 404 handler for unmatched routes ──
 app.use((req, res) => {
