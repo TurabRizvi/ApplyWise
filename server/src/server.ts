@@ -14,6 +14,7 @@ import authRoutes from "./routes/authRoutes";
 import hrAuthRoutes from "./routes/hrAuthRoutes";
 import profileRoutes from "./routes/profileRoutes";
 import resumeRoutes from "./routes/resumeRoutes";
+import assistantRoutes from "./routes/assistantRoutes";
 const app = express();
 
 // ── Middleware order is deliberate and matters ──
@@ -40,6 +41,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/hr-auth", hrAuthRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/resumes", resumeRoutes);
+app.use("/api/assistant", assistantRoutes);
 
 // ── 404 handler for unmatched routes ──
 app.use((req, res) => {
