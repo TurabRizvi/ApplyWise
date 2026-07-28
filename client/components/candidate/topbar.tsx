@@ -1,0 +1,60 @@
+"use client";
+
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { LogOut, UserCircle, ChevronDown } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth-context";
+
+export function CandidateTopbar() {
+  const router = useRouter();
+  const { profile, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
+
+  return (
+    <header className="flex h-16 items-center justify-between border-b border-border px-6">
+      <div />
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+        <div className="relative">
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-accent"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <UserCircle className="h-5 w-5" />
+            </div>
+            <span className="hidden font-medium text-foreground sm:inline">
+              {profile?.fullName ?? "Account"}
+            </span>
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          </button>
+
+          {menuOpen && (
+            <>
+              {/* Click-outside catcher */}
+              <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+              <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-border bg-card p-1 shadow-lg">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start gap-2 text-destructive hover:text-destructive"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}

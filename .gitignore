@@ -5,11 +5,13 @@ node_modules/
 # Build output
 dist/
 build/
+.next/
 
 # Environment files
 .env
 .env.local
 .env.*.local
+.env.example
 
 # Logs
 npm-debug.log*

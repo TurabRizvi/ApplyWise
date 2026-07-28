@@ -10,10 +10,9 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Logo } from "@/components/logo";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { AuthSplitLayout } from "@/components/auth-split-layout";
 import { useAuth } from "@/lib/auth-context";
 import { registerCandidate, registerHr } from "@/lib/api";
 
@@ -184,43 +183,32 @@ function RegisterPageContent() {
   const defaultTab = searchParams.get("type") === "hr" ? "hr" : "candidate";
 
   return (
-    <div className="bg-grid flex min-h-screen flex-col items-center justify-center px-4 py-12">
-      <div className="absolute right-4 top-4">
-        <ThemeToggle />
+    <AuthSplitLayout>
+      <div className="mb-6 text-center lg:text-left">
+        <CardTitle className="mb-1.5">Create your account</CardTitle>
+        <CardDescription>Start building smarter resumes, or start screening candidates</CardDescription>
       </div>
 
-      <Link href="/" className="mb-8">
-        <Logo />
-      </Link>
+      <Tabs defaultValue={defaultTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="candidate">Candidate</TabsTrigger>
+          <TabsTrigger value="hr">Recruiter</TabsTrigger>
+        </TabsList>
+        <TabsContent value="candidate">
+          <CandidateForm />
+        </TabsContent>
+        <TabsContent value="hr">
+          <HrForm />
+        </TabsContent>
+      </Tabs>
 
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="text-center">
-          <CardTitle>Create your account</CardTitle>
-          <CardDescription>Start building smarter resumes, or start screening candidates</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue={defaultTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="candidate">Candidate</TabsTrigger>
-              <TabsTrigger value="hr">Recruiter</TabsTrigger>
-            </TabsList>
-            <TabsContent value="candidate">
-              <CandidateForm />
-            </TabsContent>
-            <TabsContent value="hr">
-              <HrForm />
-            </TabsContent>
-          </Tabs>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
-              Log in
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link href="/login" className="font-medium text-primary hover:underline">
+          Log in
+        </Link>
+      </p>
+    </AuthSplitLayout>
   );
 }
 

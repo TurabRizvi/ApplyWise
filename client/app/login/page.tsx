@@ -10,16 +10,12 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Logo } from "@/components/logo";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { AuthSplitLayout } from "@/components/auth-split-layout";
 import { useAuth } from "@/lib/auth-context";
 import { loginCandidate, loginHr } from "@/lib/api";
 
-// Kept intentionally simple to mirror the backend's own validation — this
-// is NOT re-deriving the security rules, just checking the shape before
-// we bother hitting the network.
 const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email address"),
   password: z.string().min(1, "Password is required"),
@@ -85,43 +81,32 @@ function LoginPageContent() {
   const defaultTab = searchParams.get("type") === "hr" ? "hr" : "candidate";
 
   return (
-    <div className="bg-grid flex min-h-screen flex-col items-center justify-center px-4 py-12">
-      <div className="absolute right-4 top-4">
-        <ThemeToggle />
+    <AuthSplitLayout>
+      <div className="mb-6 text-center lg:text-left">
+        <CardTitle className="mb-1.5">Welcome back</CardTitle>
+        <CardDescription>Log in to continue to ApplyWise</CardDescription>
       </div>
 
-      <Link href="/" className="mb-8">
-        <Logo />
-      </Link>
+      <Tabs defaultValue={defaultTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="candidate">Candidate</TabsTrigger>
+          <TabsTrigger value="hr">Recruiter</TabsTrigger>
+        </TabsList>
+        <TabsContent value="candidate">
+          <LoginForm accountType="candidate" />
+        </TabsContent>
+        <TabsContent value="hr">
+          <LoginForm accountType="hr" />
+        </TabsContent>
+      </Tabs>
 
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="text-center">
-          <CardTitle>Welcome back</CardTitle>
-          <CardDescription>Log in to continue to ApplyWise</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue={defaultTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="candidate">Candidate</TabsTrigger>
-              <TabsTrigger value="hr">Recruiter</TabsTrigger>
-            </TabsList>
-            <TabsContent value="candidate">
-              <LoginForm accountType="candidate" />
-            </TabsContent>
-            <TabsContent value="hr">
-              <LoginForm accountType="hr" />
-            </TabsContent>
-          </Tabs>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-medium text-primary hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Don&apos;t have an account?{" "}
+        <Link href="/register" className="font-medium text-primary hover:underline">
+          Sign up
+        </Link>
+      </p>
+    </AuthSplitLayout>
   );
 }
 

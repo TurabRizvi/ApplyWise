@@ -82,3 +82,12 @@
   background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
   background-size: 24px 24px;
 }
+
+/* Soft ambient glow behind the hero mockup cards */
+.hero-glow {
+  background: radial-gradient(circle at 50% 40%, hsl(258 90% 66% / 0.25), transparent 65%);
+}
+
+.dark .hero-glow {
+  background: radial-gradient(circle at 50% 40%, hsl(258 90% 66% / 0.35), transparent 65%);
+}

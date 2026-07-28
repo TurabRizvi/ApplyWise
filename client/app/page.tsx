@@ -1,176 +1,460 @@
+"use client";
+
+import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, FileText, Sparkles, Mic, Mail, KanbanSquare, Users, ScanSearch, GitCompare } from "lucide-react";
+import {
+  ArrowRight,
+  Calendar,
+  Sparkles,
+  FileText,
+  ScanSearch,
+  Wand2,
+  Mic,
+  Mail,
+  KanbanSquare,
+  Users,
+  Target,
+  ListChecks,
+  CheckCircle2,
+  Briefcase,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { StarRating } from "@/components/star-rating";
+import { cn } from "@/lib/utils";
 
-const candidateFeatures = [
-  { icon: FileText, title: "Resume Builder", desc: "Build a clean, structured resume section by section, or upload one you already have." },
-  { icon: ScanSearch, title: "ATS Analyzer", desc: "See exactly how applicant tracking systems score your resume — formatting, keywords, grammar, action verbs." },
-  { icon: Sparkles, title: "AI Rewrite", desc: "Get an ATS-optimized rewrite of your resume, without inventing facts you didn't already have." },
-  { icon: Mic, title: "Interview Prep", desc: "Practice with questions generated from your actual resume, not generic question banks." },
-  { icon: Mail, title: "Cover Letters", desc: "Generate a tailored cover letter for any job in seconds, ready to edit and send." },
-  { icon: KanbanSquare, title: "Application Tracker", desc: "Track every application from wishlist to offer, all in one place." },
+const featureIcons = [
+  { icon: FileText, title: "AI Resume Builder", desc: "Create ATS-optimized resumes that stand out." },
+  { icon: ScanSearch, title: "ATS Analyzer", desc: "Get a detailed score and actionable suggestions." },
+  { icon: Wand2, title: "AI Rewrite", desc: "Instantly improve your resume with AI." },
+  { icon: Mic, title: "Interview Prep", desc: "Personalized questions based on your resume." },
+  { icon: Mail, title: "Cover Letters", desc: "Generate tailored cover letters in seconds." },
+  { icon: KanbanSquare, title: "Application Tracker", desc: "Track every step of your job applications." },
 ];
 
-const hrFeatures = [
-  { icon: Users, title: "Bulk Screening", desc: "Upload dozens of resumes at once — one bad file never blocks the rest of the batch." },
-  { icon: ScanSearch, title: "AI Ranking", desc: "Every resume scored and ranked against your job description automatically." },
-  { icon: GitCompare, title: "Candidate Comparison", desc: "Put your shortlist side by side — score, matched skills, and gaps at a glance." },
+const candidateChecklist = [
+  "Resume Builder & AI Rewrite",
+  "ATS Analysis & Optimization",
+  "Interview Preparation",
+  "Application Tracking",
 ];
+
+const hrChecklist = ["Bulk Resume Screening", "AI Match Scoring", "Candidate Ranking", "Side-by-Side Comparison"];
+
+const stats = [
+  { icon: Users, value: "10,000+", label: "Active Users" },
+  { icon: FileText, value: "25,000+", label: "Resumes Built" },
+  { icon: Briefcase, value: "50,000+", label: "Applications Tracked" },
+  { icon: CheckCircle2, value: "1,500+", label: "Organizations Onboarded" },
+];
+
+// Stylized placeholder wordmarks — NOT real company logos or names, since
+// this product hasn't actually onboarded these organizations. Implying
+// real companies use/endorse an unreleased demo would be misleading.
+const trustLogos = ["Nexora", "Bluepeak", "Veritas", "Havenly", "Orbital", "Cobalt Labs", "Meridian", "ArcTech"];
+
+function AtsScoreCard({ label }: { label: string }) {
+  const rows = [
+    { name: "Formatting", value: 92 },
+    { name: "Keywords", value: 90 },
+    { name: "Content", value: 88 },
+    { name: "Action Verbs", value: 93 },
+    { name: "Grammar", value: 89 },
+  ];
+  const suggestions = [
+    "Add more quantifiable achievements",
+    "Include missing keywords",
+    "Improve bullet point clarity",
+    "Fix minor grammar issues",
+  ];
+
+  return (
+    <Card className="w-full shadow-xl">
+      <CardContent className="p-5">
+        <p className="mb-4 text-sm font-medium text-muted-foreground">{label}</p>
+        <div className="mb-5 flex items-center gap-5">
+          <div className="relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-[6px] border-success/20">
+            <div className="absolute inset-0 rounded-full border-[6px] border-transparent border-t-success border-r-success border-b-success" />
+            <div className="text-center">
+              <p className="text-2xl font-bold text-foreground">92</p>
+              <p className="text-[10px] font-medium text-success">Excellent</p>
+            </div>
+          </div>
+          <div className="min-w-0 flex-1 space-y-2">
+            {rows.map((row) => (
+              <div key={row.name}>
+                <div className="mb-1 flex items-baseline justify-between gap-2 text-[11px] text-muted-foreground">
+                  <span className="min-w-0 truncate">{row.name}</span>
+                  <span className="shrink-0 whitespace-nowrap font-medium text-foreground">{row.value}/100</span>
+                </div>
+                <div className="h-1 w-full rounded-full bg-muted">
+                  <div className="h-1 rounded-full bg-success" style={{ width: `${row.value}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-lg border border-border bg-muted/40 p-3">
+          <p className="mb-2 text-xs font-semibold text-foreground">AI Suggestions</p>
+          <div className="space-y-2">
+            {suggestions.map((s) => (
+              <div key={s} className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Sparkles className="h-3 w-3 shrink-0 text-primary" />
+                <span className="flex-1">{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function CandidateSideCard() {
+  const items = [
+    { label: "Applied", count: 12, color: "text-primary" },
+    { label: "Assessment", count: 3, color: "text-warning" },
+    { label: "Interview", count: 5, color: "text-primary" },
+    { label: "Offer", count: 1, color: "text-success" },
+    { label: "Rejected", count: 2, color: "text-destructive" },
+  ];
+  return (
+    <Card className="w-full shadow-xl">
+      <CardContent className="p-5">
+        <p className="mb-4 text-sm font-semibold text-foreground">My Applications</p>
+        <div className="space-y-2.5">
+          {items.map((item) => (
+            <div key={item.label} className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
+              <span className="text-xs text-foreground">{item.label}</span>
+              <span className={cn("text-xs font-semibold", item.color)}>{item.count}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 rounded-lg border border-border p-3">
+          <p className="text-[11px] text-muted-foreground">Next Interview</p>
+          <p className="mt-0.5 text-sm font-semibold text-foreground">Frontend Developer</p>
+          <p className="text-[11px] text-muted-foreground">TechNova Solutions · 24 May, 11:00 AM</p>
+          <Button size="sm" className="mt-3 w-full">
+            View Details
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function HrSideCard() {
+  const items = [
+    { label: "Frontend Developer", score: 82, count: 20 },
+    { label: "Backend Engineer", score: 76, count: 18 },
+    { label: "UI/UX Designer", score: 71, count: 15 },
+  ];
+  return (
+    <Card className="w-full shadow-xl">
+      <CardContent className="p-5">
+        <p className="mb-4 text-sm font-semibold text-foreground">Screening Batches</p>
+        <div className="space-y-3">
+          {items.map((item) => (
+            <div key={item.label} className="rounded-lg bg-muted/40 p-3">
+              <div className="mb-1.5 flex justify-between text-xs">
+                <span className="font-medium text-foreground">{item.label}</span>
+                <span className="text-muted-foreground">{item.count} candidates</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-1.5 flex-1 rounded-full bg-muted">
+                  <div className="h-1.5 rounded-full bg-success" style={{ width: `${item.score}%` }} />
+                </div>
+                <span className="text-xs font-semibold text-success">{item.score}%</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 rounded-lg border border-border p-3">
+          <p className="text-[11px] text-muted-foreground">Top Candidate</p>
+          <p className="mt-0.5 text-sm font-semibold text-foreground">Arjun Mehta — 93% match</p>
+          <p className="text-[11px] text-muted-foreground">React, TypeScript, Next.js</p>
+          <Button size="sm" className="mt-3 w-full">
+            View Ranking
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function LandingPage() {
+  const [audience, setAudience] = React.useState<"candidate" | "hr">("candidate");
+
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
-      <header className="border-b border-border">
+      <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
         <div className="container flex h-16 items-center justify-between">
           <Logo />
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-7 md:flex">
+            <a href="#features" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              Features
+            </a>
             <a href="#candidates" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               For Candidates
             </a>
-            <a href="#recruiters" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              For Recruiters
+            <a href="#hr" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              For HR
+            </a>
+            <a href="#cta" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              Pricing
             </a>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
               <Link href="/login">Log in</Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href="/register">Get started</Link>
+              <Link href="/register">Get Started Free</Link>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="bg-grid relative overflow-hidden border-b border-border">
-        <div className="container grid gap-12 py-20 md:grid-cols-2 md:items-center md:py-28">
-          <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
+      <section className="hero-glow relative overflow-hidden border-b border-border">
+        <div className="container py-16 md:py-24">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              AI-powered, for candidates and recruiters
+              AI-Powered Career &amp; Hiring Platform
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-              Resumes that pass the bots.
-              <br />
-              Hiring that isn&apos;t guesswork.
-            </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
-              ApplyWise scores and rewrites your resume for real ATS systems, preps you for
-              interviews based on what&apos;s actually on it, and helps recruiters screen
-              candidates in seconds instead of hours.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button size="lg" asChild>
-                <Link href="/register">
-                  Build my resume <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/register?type=hr">I&apos;m hiring</Link>
-              </Button>
+
+            {/* Interactive audience toggle — swaps the mockup cards below */}
+            <div className="inline-flex rounded-full border border-border bg-card p-1">
+              <button
+                onClick={() => setAudience("candidate")}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  audience === "candidate" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                )}
+              >
+                For Candidates
+              </button>
+              <button
+                onClick={() => setAudience("hr")}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  audience === "hr" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                )}
+              >
+                For HR Teams
+              </button>
             </div>
           </div>
 
-          {/* Signature visual: the resume score gauge, echoing the real
-              product's dashboard — this is the platform's most concrete,
-              trust-building moment, so it leads the page. */}
-          <div className="relative mx-auto w-full max-w-sm">
-            <Card className="shadow-xl">
-              <CardContent className="p-6">
-                <p className="mb-1 text-sm font-medium text-muted-foreground">Resume Score</p>
-                <p className="mb-4 text-xs text-muted-foreground">Last analyzed just now</p>
-                <div className="flex items-center gap-6">
-                  <div className="relative flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-[6px] border-success/25">
-                    <div className="absolute inset-0 rounded-full border-[6px] border-transparent border-t-success border-r-success" />
-                    <div className="text-center">
-                      <p className="text-3xl font-bold text-foreground">86</p>
-                      <p className="text-[10px] font-medium text-success">Very Good</p>
-                    </div>
-                  </div>
-                  <div className="flex-1 space-y-2.5">
-                    {[
-                      { label: "Formatting", value: 90 },
-                      { label: "Keywords", value: 85 },
-                      { label: "Action Verbs", value: 80 },
-                    ].map((row) => (
-                      <div key={row.label}>
-                        <div className="mb-1 flex justify-between text-xs text-muted-foreground">
-                          <span>{row.label}</span>
-                          <span className="font-medium text-foreground">{row.value}/100</span>
-                        </div>
-                        <div className="h-1.5 w-full rounded-full bg-muted">
-                          <div
-                            className="h-1.5 rounded-full bg-success"
-                            style={{ width: `${row.value}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+          <div className="grid gap-12 md:grid-cols-2 md:items-center">
+            <div>
+              <h1 className="text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
+                Better Resumes.
+                <br />
+                Smarter Hiring.
+                <br />
+                <span className="bg-brand-gradient bg-clip-text text-transparent">Stronger Futures.</span>
+              </h1>
+              <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+                ApplyWise uses AI to help candidates create ATS-friendly resumes, prep for
+                interviews, and track applications — while helping HR teams screen and rank
+                candidates faster and more accurately.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button size="lg" asChild>
+                  <Link href={audience === "hr" ? "/register?type=hr" : "/register"}>
+                    Get Started Free <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <a href="#cta">
+                    <Calendar className="mr-1 h-4 w-4" /> Book a Demo
+                  </a>
+                </Button>
+              </div>
+              <div className="mt-8 flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {["#7C5CFC", "#4F7CFF", "#22C55E", "#F59E0B"].map((color, i) => (
+                    <div
+                      key={i}
+                      className="h-8 w-8 rounded-full border-2 border-background"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <StarRating />
+                  <p className="text-xs text-muted-foreground">Trusted by 10,000+ users worldwide</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative mx-auto flex w-full max-w-md flex-col items-start gap-4 xl:max-w-2xl xl:flex-row">
+              <div className="w-full xl:flex-1">
+                <AtsScoreCard label={audience === "hr" ? "Candidate Match Score" : "Resume Score"} />
+              </div>
+              <div className="w-full xl:flex-1">
+                {audience === "hr" ? <HrSideCard /> : <CandidateSideCard />}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Candidate features */}
-      <section id="candidates" className="container py-20">
-        <div className="mb-12 max-w-xl">
-          <p className="mb-2 text-sm font-medium text-primary">For candidates</p>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">
-            Everything you need to land the interview
-          </h2>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {candidateFeatures.map((f) => (
-            <Card key={f.title}>
-              <CardContent className="p-6">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <f.icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="mb-1.5 font-semibold text-foreground">{f.title}</h3>
-                <p className="text-sm text-muted-foreground">{f.desc}</p>
-              </CardContent>
-            </Card>
+      {/* Section divider */}
+      <div className="container flex items-center gap-4 py-12">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
+        <p className="whitespace-nowrap text-center text-lg font-semibold text-foreground">
+          Everything you need to <span className="text-primary">get hired</span> and{" "}
+          <span className="text-primary">hire top talent</span>
+        </p>
+        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
+      </div>
+
+      {/* Feature icon row */}
+      <section id="features" className="container pb-20">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
+          {featureIcons.map((f) => (
+            <div key={f.title} className="text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <f.icon className="h-5 w-5 text-primary" />
+              </div>
+              <p className="mb-1 text-sm font-semibold text-foreground">{f.title}</p>
+              <p className="text-xs text-muted-foreground">{f.desc}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* HR features */}
-      <section id="recruiters" className="border-t border-border bg-muted/30 py-20">
+      {/* Built for every step — two-column comparison connected by center mark */}
+      <section className="border-t border-border bg-muted/20 py-20">
         <div className="container">
-          <div className="mb-12 max-w-xl">
-            <p className="mb-2 text-sm font-medium text-primary">For recruiters</p>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">
-              Screen candidates in seconds, not hours
-            </h2>
+          <h2 className="mb-12 text-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Built for every step of your career &amp; hiring journey
+          </h2>
+
+          <div className="relative grid gap-8 md:grid-cols-2 md:gap-16">
+            {/* Connector line + center logo mark, desktop only */}
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 items-center justify-center md:flex">
+              <div className="h-px w-full border-t border-dashed border-border" />
+              <div className="absolute flex h-14 w-14 items-center justify-center rounded-full border border-border bg-background shadow-md">
+                <Logo showWordmark={false} />
+              </div>
+            </div>
+
+            <Card id="candidates" className="relative">
+              <CardContent className="p-7">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                  <Target className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="mb-1.5 text-lg font-semibold text-foreground">For Candidates</h3>
+                <p className="mb-5 text-sm text-muted-foreground">
+                  Build better resumes, prepare with confidence, and land your dream job.
+                </p>
+                <ul className="mb-6 space-y-2.5">
+                  {candidateChecklist.map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-foreground">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <Button asChild>
+                  <Link href="/register">
+                    Explore Candidate Features <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card id="hr" className="relative">
+              <CardContent className="p-7">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                  <ListChecks className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="mb-1.5 text-lg font-semibold text-foreground">For HR Teams</h3>
+                <p className="mb-5 text-sm text-muted-foreground">
+                  Screen, rank, and compare candidates with AI — faster and smarter.
+                </p>
+                <ul className="mb-6 space-y-2.5">
+                  {hrChecklist.map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-foreground">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <Button asChild>
+                  <Link href="/register?type=hr">
+                    Explore HR Features <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
-          <div className="grid gap-6 sm:grid-cols-3">
-            {hrFeatures.map((f) => (
-              <Card key={f.title}>
-                <CardContent className="p-6">
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <f.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <h3 className="mb-1.5 font-semibold text-foreground">{f.title}</h3>
-                  <p className="text-sm text-muted-foreground">{f.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-10">
-            <Button size="lg" asChild>
-              <Link href="/register?type=hr">
-                Start screening candidates <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="container py-20">
+        <p className="mb-10 text-center text-sm font-medium text-muted-foreground">
+          Trusted by thousands of candidates and HR teams
+        </p>
+        <div className="mb-14 grid grid-cols-2 gap-8 sm:grid-cols-4">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center">
+              <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                <s.icon className="h-4 w-4 text-primary" />
+              </div>
+              <p className="text-2xl font-bold text-foreground">{s.value}</p>
+              <p className="text-xs text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-50 grayscale">
+          {trustLogos.map((name) => (
+            <span key={name} className="text-lg font-bold tracking-tight text-foreground">
+              {name}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section id="cta" className="container pb-24">
+        <div className="rounded-2xl border border-border bg-muted/30 p-8 sm:p-12">
+          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+            <div>
+              <h3 className="text-2xl font-bold tracking-tight text-foreground">Ready to take the next step?</h3>
+              <p className="mt-2 text-muted-foreground">
+                Join ApplyWise today and experience the power of AI in your career or hiring journey.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-success" /> No credit card required
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-success" /> Free forever plan
+                </span>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-3">
+              <Button size="lg" asChild>
+                <Link href="/register">
+                  Get Started Free <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <a href="#cta">
+                  <Calendar className="mr-1 h-4 w-4" /> Book a Demo
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
