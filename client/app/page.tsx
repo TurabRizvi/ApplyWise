@@ -189,7 +189,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
+      <header className="animate-fade-in-up sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
         <div className="container flex h-16 items-center justify-between">
           <Logo />
           <nav className="hidden items-center gap-7 md:flex">
@@ -226,7 +226,7 @@ export default function LandingPage() {
               AI-Powered Career &amp; Hiring Platform
             </div>
 
-            <div className="inline-flex rounded-full border border-border bg-card p-1">
+            <div className="inline-flex rounded-full border border-border bg-card p-1 animate-fade-in-up" style={{ animationDelay: "90ms" }}>
               <button
                 onClick={() => setAudience("candidate")}
                 className={cn(
@@ -250,19 +250,19 @@ export default function LandingPage() {
 
           <div className="grid gap-12 md:grid-cols-2 md:items-center">
             <div>
-              <h1 className="text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
+              <h1 className="animate-fade-in-up text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
                 Better Resumes.
                 <br />
                 Smarter Hiring.
                 <br />
                 <span className="bg-brand-gradient bg-clip-text text-transparent">Stronger Futures.</span>
               </h1>
-              <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+              <p className="mt-6 max-w-lg animate-fade-in-up text-lg text-muted-foreground" style={{ animationDelay: "120ms" }}>
                 ApplyWise uses AI to help candidates create ATS-friendly resumes, prep for
                 interviews, and track applications — while helping HR teams screen and rank
                 candidates faster and more accurately.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap gap-3 animate-fade-in-up" style={{ animationDelay: "180ms" }}>
                 <Button size="lg" asChild>
                   <Link href={audience === "hr" ? "/register?type=hr" : "/register"}>
                     Get Started Free <ArrowRight className="ml-1 h-4 w-4" />
@@ -274,7 +274,7 @@ export default function LandingPage() {
                   </a>
                 </Button>
               </div>
-              <div className="mt-8 flex items-center gap-3">
+              <div className="mt-8 flex items-center gap-3 animate-fade-in-up" style={{ animationDelay: "240ms" }}>
                 <div className="flex -space-x-2">
                   {["#7C5CFC", "#4F7CFF", "#22C55E", "#F59E0B"].map((color, i) => (
                     <div
@@ -291,7 +291,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="relative mx-auto flex w-full max-w-md flex-col items-start gap-4 xl:max-w-2xl xl:flex-row">
+            <div className="relative mx-auto flex w-full max-w-md animate-hero-float flex-col items-start gap-4 xl:max-w-2xl xl:flex-row">
               <div className="animate-fade-in-up w-full xl:flex-1">
                 <AtsScoreCard label={audience === "hr" ? "Candidate Match Score" : "Resume Score"} />
               </div>
@@ -317,7 +317,7 @@ export default function LandingPage() {
           {featureIcons.map((f, index) => (
             <div
               key={f.title}
-              className="animate-fade-in-up text-center"
+              className="animate-card-rise text-center transition-all duration-300 hover:-translate-y-1"
               style={{ animationDelay: `${index * 80}ms` }}
             >
               <div className="animate-glow mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-transform duration-200 hover:scale-105">
@@ -344,7 +344,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <Card id="candidates" className="relative">
+            <Card id="candidates" className="relative animate-card-rise transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
               <CardContent className="p-7">
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
                   <Target className="h-5 w-5 text-primary" />
@@ -369,7 +369,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card id="hr" className="relative">
+            <Card id="hr" className="relative animate-card-rise transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style={{ animationDelay: "120ms" }}>
               <CardContent className="p-7">
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
                   <ListChecks className="h-5 w-5 text-primary" />
@@ -402,8 +402,8 @@ export default function LandingPage() {
           Trusted by thousands of candidates and HR teams
         </p>
         <div className="mb-14 grid grid-cols-2 gap-8 sm:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
+          {stats.map((s, index) => (
+            <div key={s.label} className="animate-card-rise text-center" style={{ animationDelay: `${index * 80}ms` }}>
               <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
                 <s.icon className="h-4 w-4 text-primary" />
               </div>
@@ -422,7 +422,7 @@ export default function LandingPage() {
       </section>
 
       <section id="cta" className="container pb-24">
-        <div className="rounded-2xl border border-border bg-muted/30 p-8 sm:p-12">
+        <div className="animate-card-rise rounded-2xl border border-border bg-muted/30 p-8 shadow-sm sm:p-12">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div>
               <h3 className="text-2xl font-bold tracking-tight text-foreground">Ready to take the next step?</h3>
