@@ -29,11 +29,21 @@ export function signRefreshToken(payload: TokenPayload): string {
 }
 
 export function verifyAccessToken(token: string): TokenPayload {
-  return jwt.verify(token, env.JWT_ACCESS_SECRET) as TokenPayload;
+  const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET) as TokenPayload;
+  return {
+    userId: decoded.userId,
+    role: decoded.role,
+    accountType: decoded.accountType,
+  };
 }
 
 export function verifyRefreshToken(token: string): TokenPayload {
-  return jwt.verify(token, env.JWT_REFRESH_SECRET) as TokenPayload;
+  const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET) as TokenPayload;
+  return {
+    userId: decoded.userId,
+    role: decoded.role,
+    accountType: decoded.accountType,
+  };
 }
 
 // We never store the raw refresh token in the DB — only its hash. If the DB

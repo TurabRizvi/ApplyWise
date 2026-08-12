@@ -15,17 +15,19 @@ import {
   Mail,
   KanbanSquare,
   Upload,
+  Clock,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { getDashboardStats, type DashboardStats } from "@/lib/api";
 
 const statCards = [
-  { key: "resumeCount", label: "Resumes", icon: FileText, color: "text-primary" },
-  { key: "applicationsSent", label: "Applications", icon: Send, color: "text-primary" },
-  { key: "interviewsScheduled", label: "Interviews", icon: Calendar, color: "text-warning" },
-  { key: "offers", label: "Offers", icon: Briefcase, color: "text-success" },
-  { key: "rejections", label: "Rejections", icon: XCircle, color: "text-destructive" },
+  { key: "resumeCount", label: "Resumes", icon: FileText, bg: "bg-primary/10", color: "text-primary" },
+  { key: "applicationsSent", label: "Applications", icon: Send, bg: "bg-blue-500/10", color: "text-blue-500" },
+  { key: "interviewsScheduled", label: "Interviews", icon: Calendar, bg: "bg-warning/10", color: "text-warning" },
+  { key: "offers", label: "Offers", icon: Briefcase, bg: "bg-success/10", color: "text-success" },
+  { key: "rejections", label: "Rejections", icon: XCircle, bg: "bg-destructive/10", color: "text-destructive" },
 ] as const;
 
 const quickActions = [
@@ -37,6 +39,24 @@ const quickActions = [
   { href: "/candidate/cover-letters", label: "Cover Letter", desc: "Generate with AI", icon: Mail },
   { href: "/candidate/applications", label: "Track Applications", desc: "View all applications", icon: KanbanSquare },
 ];
+
+function scoreLabel(score: number) {
+  if (score >= 85) return { label: "Excellent", color: "text-success", ring: "border-t-success border-r-success" };
+  if (score >= 70) return { label: "Very Good", color: "text-success", ring: "border-t-success border-r-success" };
+  if (score >= 50) return { label: "Needs Work", color: "text-warning", ring: "border-t-warning border-r-warning" };
+  return { label: "Poor", color: "text-destructive", ring: "border-t-destructive border-r-destructive" };
+}
+
+function timeAgo(iso: string) {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 
 export default function CandidateDashboardPage() {
   const { profile, callAuthed } = useAuth();
@@ -63,6 +83,8 @@ export default function CandidateDashboardPage() {
   }, [callAuthed]);
 
   const firstName = profile?.fullName?.split(" ")[0] ?? "there";
+  const score = stats?.latestScore;
+  const overall = score?.overallScore != null ? scoreLabel(score.overallScore) : null;
 
   return (
     <div className="space-y-8">
@@ -80,19 +102,98 @@ export default function CandidateDashboardPage() {
           {error}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {statCards.map((card) => (
-            <Card key={card.key}>
-              <CardContent className="p-4">
-                <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 ${card.color}`}>
-                  <card.icon className="h-4.5 w-4.5" />
+        <>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {statCards.map((card) => (
+              <Card key={card.key}>
+                <CardContent className="p-4">
+                  <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-lg ${card.bg} ${card.color}`}>
+                    <card.icon className="h-4.5 w-4.5" />
+                  </div>
+                  <p className="text-2xl font-bold text-foreground">{stats?.[card.key] ?? 0}</p>
+                  <p className="text-xs text-muted-foreground">{card.label}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* Resume Score — real data from the most recent ATS analysis run */}
+            <Card className="lg:col-span-2">
+              <CardContent className="p-6">
+                <div className="mb-4 flex items-center justify-between">
+                  <p className="font-semibold text-foreground">Resume Score</p>
+                  {score && (
+                    <p className="text-xs text-muted-foreground">
+                      Last analyzed {timeAgo(score.analyzedAt)}
+                    </p>
+                  )}
                 </div>
-                <p className="text-2xl font-bold text-foreground">{stats?.[card.key] ?? 0}</p>
-                <p className="text-xs text-muted-foreground">{card.label}</p>
+
+                {!score || score.overallScore == null ? (
+                  <div className="flex flex-col items-center py-8 text-center">
+                    <ScanSearch className="mb-3 h-8 w-8 text-muted-foreground" />
+                    <p className="mb-4 text-sm text-muted-foreground">
+                      You haven&apos;t run an ATS analysis yet.
+                    </p>
+                    <Button asChild size="sm">
+                      <Link href="/candidate/ats-analyzer">Run ATS Analysis</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-6 sm:flex-row">
+                    <div className={`relative flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-[6px] border-muted ${overall?.ring}`}>
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-foreground">{score.overallScore}</p>
+                        <p className={`text-xs font-medium ${overall?.color}`}>{overall?.label}</p>
+                      </div>
+                    </div>
+                    <div className="grid flex-1 grid-cols-2 gap-3">
+                      {[
+                        { label: "Formatting", value: score.formattingScore },
+                        { label: "Keywords", value: score.keywordScore },
+                        { label: "Grammar", value: score.grammarScore },
+                        { label: "Action Verbs", value: score.actionVerbScore },
+                      ].map((row) => (
+                        <div key={row.label}>
+                          <div className="mb-1 flex justify-between text-xs text-muted-foreground">
+                            <span>{row.label}</span>
+                            <span className="font-medium text-foreground">{row.value ?? "—"}/100</span>
+                          </div>
+                          <div className="h-1.5 w-full rounded-full bg-muted">
+                            <div className="h-1.5 rounded-full bg-success" style={{ width: `${row.value ?? 0}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
-          ))}
-        </div>
+
+            {/* Recent Activity — real AiHistory entries, not decorative */}
+            <Card>
+              <CardContent className="p-6">
+                <p className="mb-4 font-semibold text-foreground">Recent Activity</p>
+                {stats?.recentActivity.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No AI activity yet — try one of the features below.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {stats?.recentActivity.map((item, i) => (
+                      <div key={i} className="flex items-start gap-2.5">
+                        <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        <div>
+                          <p className="text-sm text-foreground">{item.label}</p>
+                          <p className="text-xs text-muted-foreground">{timeAgo(item.createdAt)}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </>
       )}
 
       <div>

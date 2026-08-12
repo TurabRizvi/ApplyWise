@@ -10,6 +10,7 @@ import {
   Trash2,
   Loader2,
   MoreVertical,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,11 +32,15 @@ import {
   deleteResume,
   duplicateResume,
   uploadResumeFile,
+  getResume,
   type ResumeSummary,
+  type Profile,
 } from "@/lib/api";
+import { pdf } from "@react-pdf/renderer";
+import { ResumePdfDocument } from "@/components/candidate/resume-pdf-document";
 
 export default function MyResumesPage() {
-  const { callAuthed } = useAuth();
+  const { callAuthed, profile } = useAuth();
   const [resumes, setResumes] = React.useState<ResumeSummary[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -227,6 +232,8 @@ export default function MyResumesPage() {
               isBusy={pendingActionId === resume.id}
               onDuplicate={() => handleDuplicate(resume.id)}
               onDelete={() => setDeleteTarget(resume)}
+              callAuthed={callAuthed}
+              profile={profile}
             />
           ))}
         </div>
@@ -260,13 +267,40 @@ function ResumeCard({
   isBusy,
   onDuplicate,
   onDelete,
+  callAuthed,
+  profile,
 }: {
   resume: ResumeSummary;
   isBusy: boolean;
   onDuplicate: () => void;
   onDelete: () => void;
+  callAuthed: <T,>(fn: (token: string) => Promise<T>) => Promise<T>;
+  profile: Profile | null;
 }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [isDownloading, setIsDownloading] = React.useState(false);
+
+  // Unlike the Resume Builder page (which already has the full resume
+  // loaded), this list only has summary data — so downloading from here
+  // means fetching the full detail first, THEN generating the PDF.
+  const handleDownload = async () => {
+    setMenuOpen(false);
+    setIsDownloading(true);
+    try {
+      const res = await callAuthed((token) => getResume(token, resume.id));
+      const blob = await pdf(<ResumePdfDocument resume={res.data} profile={profile} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${resume.title.replace(/[^a-z0-9]+/gi, "-")}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <Card>
@@ -279,14 +313,24 @@ function ResumeCard({
             <button
               className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
               onClick={() => setMenuOpen((v) => !v)}
-              disabled={isBusy}
+              disabled={isBusy || isDownloading}
             >
-              {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreVertical className="h-4 w-4" />}
+              {isBusy || isDownloading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <MoreVertical className="h-4 w-4" />
+              )}
             </button>
             {menuOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-                <div className="absolute right-0 z-20 mt-1 w-36 rounded-lg border border-border bg-card p-1 shadow-lg">
+                <div className="absolute right-0 z-20 mt-1 w-40 rounded-lg border border-border bg-card p-1 shadow-lg">
+                  <button
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-accent"
+                    onClick={handleDownload}
+                  >
+                    <Download className="h-3.5 w-3.5" /> Download PDF
+                  </button>
                   <button
                     className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-accent"
                     onClick={() => {

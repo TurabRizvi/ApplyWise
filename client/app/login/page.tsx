@@ -14,6 +14,7 @@ import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AuthSplitLayout } from "@/components/auth-split-layout";
 import { useAuth } from "@/lib/auth-context";
+import { useHrAuth } from "@/lib/hr-auth-context";
 import { loginCandidate, loginHr } from "@/lib/api";
 
 const loginSchema = z.object({
@@ -24,7 +25,11 @@ type LoginInput = z.infer<typeof loginSchema>;
 
 function LoginForm({ accountType }: { accountType: "candidate" | "hr" }) {
   const router = useRouter();
-  const { setAuth } = useAuth();
+  // Both hooks are always called (never conditionally) to satisfy the rules
+  // of hooks — only the relevant one's setter is actually used below, based
+  // on which tab (candidate vs recruiter) this form instance represents.
+  const candidateAuth = useAuth();
+  const hrAuth = useHrAuth();
   const [serverError, setServerError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -38,10 +43,16 @@ function LoginForm({ accountType }: { accountType: "candidate" | "hr" }) {
     setServerError(null);
     setIsSubmitting(true);
     try {
-      const result = accountType === "candidate" ? await loginCandidate(values) : await loginHr(values);
-      const authUser = result.data.user ?? result.data.hrUser ?? null;
-      setAuth(result.data.accessToken, authUser ?? null);
-      router.push(accountType === "candidate" ? "/candidate" : "/hr");
+      if (accountType === "candidate") {
+        const result = await loginCandidate(values);
+        candidateAuth.setAuth(result.data.accessToken, result.data.user ?? null);
+        router.push("/candidate");
+      } else {
+        const result = await loginHr(values);
+        hrAuth.setAuth(result.data.accessToken);
+        await hrAuth.refetchMe();
+        router.push("/hr");
+      }
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Login failed. Please try again.");
     } finally {

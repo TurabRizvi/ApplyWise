@@ -112,3 +112,12 @@ export const coverLetterGenerate = asyncHandler(async (req: Request, res: Respon
 
   res.status(201).json({ success: true, data: coverLetter });
 });
+
+export const listCoverLetters = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.auth!.userId;
+  const coverLetters = await prisma.coverLetter.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+  res.status(200).json({ success: true, data: coverLetters });
+});

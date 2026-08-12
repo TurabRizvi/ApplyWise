@@ -6,7 +6,7 @@ import { chatWithAssistant } from "../controllers/assistantController";
 
 const router = Router();
 
-router.use(requireAuth, requireRole(["CANDIDATE"]));
+router.use(requireAuth, requireRole(["CANDIDATE", "ORG_ADMIN", "RECRUITER"]));
 router.post("/", validate(assistantMessageSchema), chatWithAssistant);
 
 export default router;

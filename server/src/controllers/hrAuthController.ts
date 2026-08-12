@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../config/prisma";
 import { asyncHandler } from "../utils/asyncHandler";
 import { AppError } from "../utils/AppError";
@@ -18,7 +19,7 @@ const LOCKOUT_MINUTES = 15;
 const hrRefreshCookieOptions = {
   httpOnly: true,
   secure: isProd,
-  sameSite: "strict" as const,
+  sameSite: isProd ? ("none" as const) : ("lax" as const),
   maxAge: 7 * 24 * 60 * 60 * 1000,
   path: "/api/hr-auth",
 };
@@ -41,7 +42,7 @@ export const registerHr = asyncHandler(async (req: Request, res: Response) => {
   // somehow failed after the Organization was made, we'd have an orphaned
   // org with no admin — so this MUST be a single transaction, not two
   // separate .create() calls.
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const organization = await tx.organization.create({
       data: { name: organizationName },
     });
@@ -183,4 +184,27 @@ export const logoutHr = asyncHandler(async (req: Request, res: Response) => {
   }
   res.clearCookie("hrRefreshToken", { path: "/api/hr-auth" });
   res.status(200).json({ success: true, message: "Logged out" });
+});
+
+// "Who am I" endpoint — the frontend needs this because login/refresh only
+// return the bare hrUser {id, email, role}, not the organization's name.
+// Rather than duplicating organization lookup logic in multiple places,
+// this is the one place the frontend asks "who is logged in, and what
+// organization are they part of."
+export const getMe = asyncHandler(async (req: Request, res: Response) => {
+  const hrUserId = req.auth!.userId;
+
+  const hrUser = await prisma.hrUser.findUnique({
+    where: { id: hrUserId },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      organization: { select: { id: true, name: true } },
+    },
+  });
+
+  if (!hrUser) throw new AppError("HR account not found", 404);
+
+  res.status(200).json({ success: true, data: hrUser });
 });

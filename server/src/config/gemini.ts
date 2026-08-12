@@ -13,7 +13,11 @@ if (!parsed.success) {
 
 export const genAI = new GoogleGenerativeAI(parsed.data.GEMINI_API_KEY);
 
-// Flash is used deliberately, not Pro — it's the model actually covered by
-// Gemini's free tier as of writing. If you upgrade to a paid tier later,
-// this is the one line that would change.
-export const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+// gemini-2.0-flash was shut down by Google on June 1, 2026 — this is why
+// every AI feature stopped working. gemini-3.5-flash is the current
+// recommended free-tier model with no announced shutdown date yet.
+// If you ever see AI features silently break again months from now,
+// check https://ai.google.dev/gemini-api/docs/deprecations first —
+// Google deprecates specific model IDs on a rolling schedule, not the
+// whole API, so this is the most likely cause.
+export const geminiModel = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });

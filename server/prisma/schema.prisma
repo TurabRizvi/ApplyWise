@@ -247,7 +247,8 @@ model HrUser {
   failedLoginAttempts Int @default(0)
   lockedUntil   DateTime?
   createdAt     DateTime @default(now())
-  hrRefreshTokens HrRefreshToken[]    
+  hrRefreshTokens HrRefreshToken[]  
+  hrAiHistory   HrAiHistory[] 
 
   @@index([organizationId])
   @@index([email])
@@ -292,6 +293,18 @@ model HrRefreshToken {
   expiresAt DateTime
   revoked   Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  @@index([hrUserId])
+}
+
+model HrAiHistory {
+  id           String   @id @default(uuid())
+  hrUserId     String
+  hrUser       HrUser   @relation(fields: [hrUserId], references: [id], onDelete: Cascade)
+  featureType  String   // ASSISTANT (only use currently)
+  inputSummary String
+  outputSummary String
+  createdAt    DateTime @default(now())
 
   @@index([hrUserId])
 }

@@ -1,5 +1,6 @@
 import { geminiModel } from "../config/gemini";
 import { AppError } from "../utils/AppError";
+import { logger } from "../utils/logger";
 
 // ── Shared helper: call Gemini, enforce JSON output, retry once on a
 // malformed response before giving up. Gemini sometimes wraps JSON in
@@ -15,12 +16,16 @@ async function callGeminiForJson<T>(prompt: string): Promise<T> {
 
   try {
     return await attempt();
-  } catch {
-    // one retry — AI output is non-deterministic, a single malformed
-    // response isn't necessarily a real failure, just a bad roll.
+  } catch (firstError) {
+    logger.error("Gemini call failed (attempt 1)", {
+      message: firstError instanceof Error ? firstError.message : String(firstError),
+    });
     try {
       return await attempt();
-    } catch {
+    } catch (secondError) {
+      logger.error("Gemini call failed (attempt 2, giving up)", {
+        message: secondError instanceof Error ? secondError.message : String(secondError),
+      });
       throw new AppError(
         "The AI service returned an unexpected response. Please try again.",
         502

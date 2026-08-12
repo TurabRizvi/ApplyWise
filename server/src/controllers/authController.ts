@@ -16,8 +16,13 @@ const LOCKOUT_MINUTES = 15;
 // token theft for the long-lived credential.
 const refreshCookieOptions = {
   httpOnly: true,
-  secure: isProd, // only sent over HTTPS in production
-  sameSite: "strict" as const,
+  secure: isProd, // required to be true whenever sameSite is "none" — browsers reject it otherwise
+  // "strict" works locally (frontend and backend are both localhost), but breaks entirely
+  // once deployed, since your frontend and backend will be on different domains
+  // (e.g. vercel.app vs onrender.com) and "strict"/"lax" cookies don't get sent
+  // cross-domain even with credentials: "include". "none" is required for that,
+  // but only in production — locally, "lax" is safer and doesn't need HTTPS.
+  sameSite: isProd ? ("none" as const) : ("lax" as const),
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days, matches JWT_REFRESH_EXPIRES_IN default
   path: "/api/auth", // scope the cookie narrowly, not sent on every route
 };

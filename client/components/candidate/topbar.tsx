@@ -2,15 +2,17 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, UserCircle, ChevronDown } from "lucide-react";
+import { LogOut, UserCircle, ChevronDown, Sparkles } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
+import { AiAssistantPanel } from "@/components/candidate/ai-assistant-panel";
 
 export function CandidateTopbar() {
   const router = useRouter();
   const { profile, logout } = useAuth();
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [assistantOpen, setAssistantOpen] = React.useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -21,6 +23,10 @@ export function CandidateTopbar() {
     <header className="flex h-16 items-center justify-between border-b border-border px-6">
       <div />
       <div className="flex items-center gap-3">
+        <Button variant="outline" size="sm" onClick={() => setAssistantOpen(true)}>
+          <Sparkles className="h-4 w-4 text-primary" />
+          AI Assistant
+        </Button>
         <ThemeToggle />
         <div className="relative">
           <button
@@ -55,6 +61,8 @@ export function CandidateTopbar() {
           )}
         </div>
       </div>
+
+      <AiAssistantPanel open={assistantOpen} onClose={() => setAssistantOpen(false)} />
     </header>
   );
 }

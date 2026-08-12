@@ -14,6 +14,7 @@ import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AuthSplitLayout } from "@/components/auth-split-layout";
 import { useAuth } from "@/lib/auth-context";
+import { useHrAuth } from "@/lib/hr-auth-context";
 import { registerCandidate, registerHr } from "@/lib/api";
 
 // Mirrors the backend's password policy (Day 1, authValidators.ts) exactly —
@@ -113,7 +114,7 @@ function CandidateForm() {
 
 function HrForm() {
   const router = useRouter();
-  const { setAuth } = useAuth();
+  const { setAuth, refetchMe } = useHrAuth();
   const [serverError, setServerError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -128,7 +129,8 @@ function HrForm() {
     setIsSubmitting(true);
     try {
       const result = await registerHr(values);
-      setAuth(result.data.accessToken, result.data.hrUser ?? null);
+      setAuth(result.data.accessToken);
+      await refetchMe();
       router.push("/hr");
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Registration failed. Please try again.");
