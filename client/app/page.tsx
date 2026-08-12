@@ -222,7 +222,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="hero-glow relative overflow-hidden border-b border-border">
         <div className="container py-16 md:py-24">
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4 animate-fade-in-up">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               AI-Powered Career &amp; Hiring Platform
@@ -295,10 +295,10 @@ export default function LandingPage() {
             </div>
 
             <div className="relative mx-auto flex w-full max-w-md flex-col items-start gap-4 xl:max-w-2xl xl:flex-row">
-              <div className="w-full xl:flex-1">
+              <div className="animate-fade-in-up w-full xl:flex-1">
                 <AtsScoreCard label={audience === "hr" ? "Candidate Match Score" : "Resume Score"} />
               </div>
-              <div className="w-full xl:flex-1">
+              <div className="animate-fade-in-up w-full xl:flex-1 [animation-delay:120ms]">
                 {audience === "hr" ? <HrSideCard /> : <CandidateSideCard />}
               </div>
             </div>
@@ -319,9 +319,13 @@ export default function LandingPage() {
       {/* Feature icon row */}
       <section id="features" className="container pb-20">
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
-          {featureIcons.map((f) => (
-            <div key={f.title} className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          {featureIcons.map((f, index) => (
+            <div
+              key={f.title}
+              className="animate-fade-in-up text-center"
+              style={{ animationDelay: `${index * 80}ms` }}
+            >
+              <div className="animate-glow mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-transform duration-200 hover:scale-105">
                 <f.icon className="h-5 w-5 text-primary" />
               </div>
               <p className="mb-1 text-sm font-semibold text-foreground">{f.title}</p>

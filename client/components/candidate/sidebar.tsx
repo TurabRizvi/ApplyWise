@@ -75,8 +75,8 @@ export function CandidateMobileSidebar({ open, onClose }: { open: boolean; onClo
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={onClose} />
-      <div className="fixed left-0 top-0 z-50 flex h-full w-[280px] flex-col border-r border-border bg-card shadow-xl lg:hidden">
+      <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden" onClick={onClose} />
+      <div className="animate-slide-in-right fixed left-0 top-0 z-50 flex h-full w-[280px] flex-col border-r border-border bg-card shadow-2xl lg:hidden">
         <div className="flex h-16 items-center justify-between border-b border-border px-4">
           <Link href="/candidate" onClick={onClose}>
             <Logo />
@@ -84,7 +84,7 @@ export function CandidateMobileSidebar({ open, onClose }: { open: boolean; onClo
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+            className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             aria-label="Close navigation"
           >
             <X className="h-4 w-4" />
