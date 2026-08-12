@@ -28,11 +28,43 @@ export function HrAiAssistantPanel({ open, onClose }: { open: boolean; onClose: 
   const [messages, setMessages] = React.useState<AssistantMessage[]>([WELCOME_MESSAGE]);
   const [input, setInput] = React.useState("");
   const [isSending, setIsSending] = React.useState(false);
+  const [viewportHeight, setViewportHeight] = React.useState<number | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, isSending]);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const updateViewport = () => {
+      if (typeof window === "undefined") return;
+      const nextHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      setViewportHeight(nextHeight);
+    };
+
+    updateViewport();
+
+    const visualViewport = window.visualViewport;
+    visualViewport?.addEventListener("resize", updateViewport);
+    visualViewport?.addEventListener("scroll", updateViewport);
+    window.addEventListener("resize", updateViewport);
+
+    return () => {
+      visualViewport?.removeEventListener("resize", updateViewport);
+      visualViewport?.removeEventListener("scroll", updateViewport);
+      window.removeEventListener("resize", updateViewport);
+    };
+  }, [open]);
+
+  React.useEffect(() => {
+    if (open) {
+      const frame = window.requestAnimationFrame(() => inputRef.current?.focus());
+      return () => window.cancelAnimationFrame(frame);
+    }
+  }, [open]);
 
   const handleSend = async () => {
     const trimmed = input.trim();
@@ -63,7 +95,10 @@ export function HrAiAssistantPanel({ open, onClose }: { open: boolean; onClose: 
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={onClose} />
-      <div className="fixed right-0 top-0 z-50 flex h-screen w-full max-w-sm flex-col border-l border-border bg-card shadow-xl">
+      <div
+        className="fixed right-0 top-0 z-50 flex w-[92vw] max-w-sm flex-col overflow-hidden border-l border-border bg-card shadow-xl sm:w-full"
+        style={viewportHeight ? { height: `${viewportHeight}px` } : { height: "100vh" }}
+      >
         <div className="flex items-center justify-between border-b border-border px-4 py-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient">
@@ -86,7 +121,7 @@ export function HrAiAssistantPanel({ open, onClose }: { open: boolean; onClose: 
             <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
               <div
                 className={cn(
-                  "max-w-[85%] rounded-xl px-3 py-2 text-sm",
+                  "max-w-[85%] break-words rounded-xl px-3 py-2 text-sm",
                   m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                 )}
               >
@@ -108,15 +143,17 @@ export function HrAiAssistantPanel({ open, onClose }: { open: boolean; onClose: 
         </div>
 
         <div className="border-t border-border p-3">
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <input
+              ref={inputRef}
               value={input}
+              onFocus={() => inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder="Ask me anything about the HR Portal..."
-              className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="min-w-0 flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
-            <Button size="icon" onClick={handleSend} disabled={isSending || !input.trim()}>
+            <Button size="icon" className="shrink-0" onClick={handleSend} disabled={isSending || !input.trim()}>
               <Send className="h-4 w-4" />
             </Button>
           </div>
