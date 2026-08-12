@@ -55,6 +55,46 @@ const stats = [
 // real companies use/endorse an unreleased demo would be misleading.
 const trustLogos = ["Nexora", "Bluepeak", "Veritas", "Havenly", "Orbital", "Cobalt Labs", "Meridian", "ArcTech"];
 
+function ScrollReveal({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          el.classList.add("is-visible");
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.12 }
+    );
+
+    el.classList.add("scroll-reveal");
+    el.style.transitionDelay = `${delay}ms`;
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [delay]);
+
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  );
+}
+
 function AtsScoreCard({ label }: { label: string }) {
   const rows = [
     { name: "Formatting", value: 92 },
@@ -305,27 +345,25 @@ export default function LandingPage() {
 
       <div className="container flex items-center gap-4 py-12">
         <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
-        <p className="max-w-[26rem] text-center text-lg font-semibold leading-snug text-foreground sm:max-w-none sm:whitespace-nowrap">
-          Everything you need to <span className="text-primary">get hired</span> and
-          <br className="sm:hidden" /> <span className="text-primary">hire top talent</span>
-        </p>
+        <ScrollReveal className="max-w-[26rem] text-center sm:max-w-none">
+          <p className="text-lg font-semibold leading-snug text-foreground sm:whitespace-nowrap">
+            Everything you need to <span className="text-primary">get hired</span> and
+            <br className="sm:hidden" /> <span className="text-primary">hire top talent</span>
+          </p>
+        </ScrollReveal>
         <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
       </div>
 
       <section id="features" className="container pb-20">
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
           {featureIcons.map((f, index) => (
-            <div
-              key={f.title}
-              className="animate-card-rise text-center transition-all duration-300 hover:-translate-y-1"
-              style={{ animationDelay: `${index * 80}ms` }}
-            >
+            <ScrollReveal key={f.title} className="text-center transition-all duration-300 hover:-translate-y-1" delay={index * 80}>
               <div className="animate-glow mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-transform duration-200 hover:scale-105">
                 <f.icon className="h-5 w-5 text-primary" />
               </div>
               <p className="mb-1 text-sm font-semibold text-foreground">{f.title}</p>
               <p className="text-xs text-muted-foreground">{f.desc}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -344,8 +382,9 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <Card id="candidates" className="relative animate-card-rise transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-              <CardContent className="p-7">
+            <ScrollReveal delay={80} className="relative">
+              <Card id="candidates" className="transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                <CardContent className="p-7">
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
                   <Target className="h-5 w-5 text-primary" />
                 </div>
@@ -366,11 +405,13 @@ export default function LandingPage() {
                     Explore Candidate Features <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </Button>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </ScrollReveal>
 
-            <Card id="hr" className="relative animate-card-rise transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style={{ animationDelay: "120ms" }}>
-              <CardContent className="p-7">
+            <ScrollReveal delay={160} className="relative">
+              <Card id="hr" className="transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                <CardContent className="p-7">
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
                   <ListChecks className="h-5 w-5 text-primary" />
                 </div>
@@ -391,8 +432,9 @@ export default function LandingPage() {
                     Explore HR Features <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </Button>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -403,13 +445,13 @@ export default function LandingPage() {
         </p>
         <div className="mb-14 grid grid-cols-2 gap-8 sm:grid-cols-4">
           {stats.map((s, index) => (
-            <div key={s.label} className="animate-card-rise text-center" style={{ animationDelay: `${index * 80}ms` }}>
+            <ScrollReveal key={s.label} className="text-center" delay={index * 80}>
               <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
                 <s.icon className="h-4 w-4 text-primary" />
               </div>
               <p className="text-2xl font-bold text-foreground">{s.value}</p>
               <p className="text-xs text-muted-foreground">{s.label}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-50 grayscale">
@@ -422,7 +464,7 @@ export default function LandingPage() {
       </section>
 
       <section id="cta" className="container pb-24">
-        <div className="animate-card-rise rounded-2xl border border-border bg-muted/30 p-8 shadow-sm sm:p-12">
+        <ScrollReveal className="rounded-2xl border border-border bg-muted/30 p-8 shadow-sm sm:p-12">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div>
               <h3 className="text-2xl font-bold tracking-tight text-foreground">Ready to take the next step?</h3>
@@ -451,7 +493,7 @@ export default function LandingPage() {
               </Button>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       <footer className="border-t border-border py-10">

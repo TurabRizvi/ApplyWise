@@ -104,6 +104,18 @@
   .animate-hero-float {
     animation: heroFloat 6s ease-in-out infinite alternate;
   }
+
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    will-change: transform, opacity;
+  }
+
+  .scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInUp {
@@ -186,9 +198,12 @@
   .animate-glow,
   .animate-card-rise,
   .animate-soft-pulse,
-  .animate-hero-float {
+  .animate-hero-float,
+  .scroll-reveal {
     animation: none !important;
     transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
