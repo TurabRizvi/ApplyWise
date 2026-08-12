@@ -104,8 +104,12 @@ export default function CandidateDashboardPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {statCards.map((card) => (
-              <Card key={card.key}>
+            {statCards.map((card, index) => (
+              <Card
+                key={card.key}
+                className="animate-card-rise border-0 bg-card/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                style={{ animationDelay: `${index * 80}ms` }}
+              >
                 <CardContent className="p-4">
                   <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-lg ${card.bg} ${card.color}`}>
                     <card.icon className="h-4.5 w-4.5" />
@@ -119,7 +123,7 @@ export default function CandidateDashboardPage() {
 
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Resume Score — real data from the most recent ATS analysis run */}
-            <Card className="lg:col-span-2">
+            <Card className="animate-card-rise lg:col-span-2 border-0 bg-card/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" style={{ animationDelay: "120ms" }}>
               <CardContent className="p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <p className="font-semibold text-foreground">Resume Score</p>
@@ -172,7 +176,7 @@ export default function CandidateDashboardPage() {
             </Card>
 
             {/* Recent Activity — real AiHistory entries, not decorative */}
-            <Card>
+            <Card className="animate-card-rise border-0 bg-card/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" style={{ animationDelay: "180ms" }}>
               <CardContent className="p-6">
                 <p className="mb-4 font-semibold text-foreground">Recent Activity</p>
                 {stats?.recentActivity.length === 0 ? (
@@ -199,9 +203,9 @@ export default function CandidateDashboardPage() {
       <div>
         <h2 className="mb-4 text-lg font-semibold text-foreground">Quick Actions</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {quickActions.map((action) => (
+          {quickActions.map((action, index) => (
             <Link key={action.label} href={action.href}>
-              <Card className="transition-colors hover:border-primary/50">
+              <Card className="animate-card-rise transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg" style={{ animationDelay: `${index * 70}ms` }}>
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                     <action.icon className="h-5 w-5 text-primary" />

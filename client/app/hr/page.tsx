@@ -74,33 +74,43 @@ export default function HrDashboardPage() {
       ) : (
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <Card>
-              <CardContent className="p-5">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <FolderKanban className="h-5 w-5 text-primary" />
-                </div>
-                <p className="text-3xl font-bold text-foreground">{stats?.totalBatches ?? 0}</p>
-                <p className="text-sm text-muted-foreground">Batches Created</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-5">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                  <Users className="h-5 w-5 text-blue-500" />
-                </div>
-                <p className="text-3xl font-bold text-foreground">{stats?.candidatesScreened ?? 0}</p>
-                <p className="text-sm text-muted-foreground">Candidates Screened</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-5">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
-                  <Percent className="h-5 w-5 text-success" />
-                </div>
-                <p className="text-3xl font-bold text-foreground">{stats?.averageMatchScore ?? 0}%</p>
-                <p className="text-sm text-muted-foreground">Average Match Score</p>
-              </CardContent>
-            </Card>
+            {[
+              {
+                key: "totalBatches",
+                label: "Batches Created",
+                icon: FolderKanban,
+                className: "bg-primary/10 text-primary",
+                value: (stats: HrDashboardStats | null) => stats?.totalBatches ?? 0,
+              },
+              {
+                key: "candidatesScreened",
+                label: "Candidates Screened",
+                icon: Users,
+                className: "bg-blue-500/10 text-blue-500",
+                value: (stats: HrDashboardStats | null) => stats?.candidatesScreened ?? 0,
+              },
+              {
+                key: "averageMatchScore",
+                label: "Average Match Score",
+                icon: Percent,
+                className: "bg-success/10 text-success",
+                value: (stats: HrDashboardStats | null) => `${stats?.averageMatchScore ?? 0}%`,
+              },
+            ].map((card, index) => (
+              <Card
+                key={card.key}
+                className="animate-card-rise border-0 bg-card/95 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                style={{ animationDelay: `${index * 90}ms` }}
+              >
+                <CardContent className="p-5">
+                  <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-lg ${card.className}`}>
+                    <card.icon className="h-5 w-5" />
+                  </div>
+                  <p className="text-3xl font-bold text-foreground">{card.value(stats)}</p>
+                  <p className="text-sm text-muted-foreground">{card.label}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           <div className="grid gap-6 lg:grid-cols-3">
@@ -131,9 +141,9 @@ export default function HrDashboardPage() {
                 </Card>
               ) : (
                 <div className="space-y-2">
-                  {recentBatches.map((batch) => (
+                  {recentBatches.map((batch, index) => (
                     <Link key={batch.id} href={`/hr/batches/${batch.id}`}>
-                      <Card className="transition-colors hover:border-primary/50">
+                      <Card className="animate-card-rise transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg" style={{ animationDelay: `${index * 80}ms` }}>
                         <CardContent className="flex items-center justify-between p-4">
                           <div>
                             <p className="font-medium text-foreground">{batch.jobTitle}</p>

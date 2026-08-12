@@ -92,6 +92,18 @@
   .animate-glow {
     animation: glowPulse 3.5s ease-in-out infinite alternate;
   }
+
+  .animate-card-rise {
+    animation: cardRise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .animate-soft-pulse {
+    animation: softPulse 2.8s ease-in-out infinite;
+  }
+
+  .animate-hero-float {
+    animation: heroFloat 6s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes fadeInUp {
@@ -126,6 +138,38 @@
   }
 }
 
+@keyframes cardRise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes softPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(124, 92, 252, 0.08);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(124, 92, 252, 0.18);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes heroFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
+}
+
 @keyframes glowPulse {
   from {
     box-shadow: 0 0 0 rgba(124, 92, 252, 0.08);
@@ -139,7 +183,10 @@
   .animate-fade-in-up,
   .animate-slide-in-right,
   .animate-float,
-  .animate-glow {
+  .animate-glow,
+  .animate-card-rise,
+  .animate-soft-pulse,
+  .animate-hero-float {
     animation: none !important;
     transition: none !important;
   }

@@ -188,169 +188,278 @@ export default function LandingPage() {
   const [audience, setAudience] = React.useState<"candidate" | "hr">("candidate");
 
   return (
-    <div className="min-h-screen bg-[#050b14] text-foreground">
-      <div className="mx-auto max-w-[430px] px-3 py-3 sm:max-w-[520px]">
-        <div className="mb-4 flex items-center justify-between px-1 text-[11px] font-medium text-white/80">
-          <span>2:22</span>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex h-3 w-3 items-center justify-center rounded-full border border-white/70 text-[8px]">◔</span>
-            <span className="inline-flex h-3 w-3 items-center justify-center rounded-full border border-white/70 text-[8px]">○</span>
-            <span className="h-2 w-2 rounded-full bg-white/80" />
-          </div>
-        </div>
-
-        <div className="mb-4 flex items-center justify-between rounded-[22px] border border-white/10 bg-[#161d2a]/90 px-3 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-          <div className="flex items-center gap-3 text-white/80">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full border border-white/15 bg-white/5 text-[10px]">⌂</div>
-            <span className="text-sm text-white/70">wise-nine.vercel.app</span>
-          </div>
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
+        <div className="container flex h-16 items-center justify-between">
+          <Logo />
+          <nav className="hidden items-center gap-7 md:flex">
+            <a href="#features" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              Features
+            </a>
+            <a href="#candidates" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              For Candidates
+            </a>
+            <a href="#hr" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              For HR
+            </a>
+            <a href="#cta" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              Pricing
+            </a>
+          </nav>
           <div className="flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-lg text-white/80">+</span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xs font-semibold text-white">2</span>
-            <span className="text-lg text-white/80">⋮</span>
-          </div>
-        </div>
-
-        <div className="mb-4 flex items-center justify-between gap-3 rounded-[20px] border border-white/10 bg-[#121a29]/90 p-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#7c5cfc] text-lg font-semibold text-white shadow-lg shadow-violet-500/30">AW</div>
-            <div className="flex items-center gap-2 text-2xl font-bold text-white">
-              <span>ApplyWise</span>
-              <span className="text-base text-white/60">☼</span>
-            </div>
-          </div>
-
-          <Button size="sm" className="rounded-xl bg-[#8a68f5] px-4 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 hover:bg-[#7e5ce8]">
-            <Link href={audience === "hr" ? "/register?type=hr" : "/register"}>Get Started Free</Link>
-          </Button>
-        </div>
-
-        <div className="mb-4 rounded-[18px] border border-white/10 bg-[#141d2a]/70 p-2.5 text-xs font-medium text-white/60 shadow-inner shadow-violet-900/20">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-violet-300" />
-            AI-Powered Career &amp; Hiring Platform
-          </div>
-        </div>
-
-        <div className="mb-4 inline-flex w-full rounded-[18px] border border-white/10 bg-[#141d2a]/60 p-1.5">
-          <button
-            onClick={() => setAudience("candidate")}
-            className={cn(
-              "flex-1 rounded-[14px] px-3 py-2 text-sm font-semibold transition-colors",
-              audience === "candidate" ? "bg-[#8a68f5] text-white" : "text-white/70"
-            )}
-          >
-            For Candidates
-          </button>
-          <button
-            onClick={() => setAudience("hr")}
-            className={cn(
-              "flex-1 rounded-[14px] px-3 py-2 text-sm font-semibold transition-colors",
-              audience === "hr" ? "bg-[#8a68f5] text-white" : "text-white/70"
-            )}
-          >
-            For HR Teams
-          </button>
-        </div>
-
-        <section className="space-y-5 pb-8">
-          <h1 className="text-5xl font-black tracking-[-0.06em] text-white leading-[0.96]">
-            Better Resumes.
-            <br />
-            Smarter Hiring.
-            <br />
-            <span className="bg-gradient-to-r from-[#b0b9ff] via-[#8a68f5] to-[#6a8dff] bg-clip-text text-transparent">
-              Stronger Futures.
-            </span>
-          </h1>
-
-          <p className="max-w-[330px] text-[22px] leading-[1.35] text-white/75">
-            ApplyWise uses AI to help candidates create ATS-friendly resumes, prep for interviews, and track applications — while helping HR teams screen and rank candidates faster and more accurately.
-          </p>
-
-          <div className="flex flex-col gap-3 pt-2">
-            <Button size="lg" className="h-14 rounded-xl bg-[#8a68f5] text-base font-semibold text-white shadow-lg shadow-violet-500/30 hover:bg-[#7a5ce4]">
-              <Link href={audience === "hr" ? "/register?type=hr" : "/register"} className="inline-flex items-center gap-2">
-                Get Started Free <ArrowRight className="h-4 w-4" />
-              </Link>
+            <ThemeToggle />
+            <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+              <Link href="/login">Log in</Link>
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-12 rounded-xl border-white/10 bg-transparent text-base font-semibold text-white hover:bg-white/5"
-              asChild
-            >
-              <a href="#cta" className="inline-flex items-center gap-2">
-                <Calendar className="h-4 w-4" /> Book a Demo
-              </a>
+            <Button size="sm" asChild>
+              <Link href="/register">Get Started Free</Link>
             </Button>
           </div>
+        </div>
+      </header>
 
-          <div className="flex items-center gap-3 pt-2">
-            <div className="flex -space-x-2">
-              {["#50c3ff", "#7c5cfc", "#34d399", "#f59e0b", "#f87171"].map((color, i) => (
-                <div key={i} className="h-8 w-8 rounded-full border-2 border-[#09121d]" style={{ backgroundColor: color }} />
-              ))}
+      <section className="hero-glow relative overflow-hidden border-b border-border">
+        <div className="container py-16 md:py-24">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              AI-Powered Career &amp; Hiring Platform
             </div>
-            <div className="flex items-center gap-2 text-white/90">
-              <StarRating />
-              <span className="text-sm text-white/70">Trusted by 10,000+ users worldwide</span>
+
+            <div className="inline-flex rounded-full border border-border bg-card p-1">
+              <button
+                onClick={() => setAudience("candidate")}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  audience === "candidate" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                )}
+              >
+                For Candidates
+              </button>
+              <button
+                onClick={() => setAudience("hr")}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  audience === "hr" ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                )}
+              >
+                For HR Teams
+              </button>
             </div>
           </div>
-        </section>
 
-        <div className="rounded-[22px] border border-white/10 bg-[#121a29]/80 p-4 shadow-[0_14px_30px_rgba(0,0,0,0.3)]">
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-2xl font-bold text-white">Candidate Match Score</p>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-2 text-sm text-white/80">
-              <span>Formatting</span>
-              <span className="font-semibold text-white">92/100</span>
+          <div className="grid gap-12 md:grid-cols-2 md:items-center">
+            <div>
+              <h1 className="text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
+                Better Resumes.
+                <br />
+                Smarter Hiring.
+                <br />
+                <span className="bg-brand-gradient bg-clip-text text-transparent">Stronger Futures.</span>
+              </h1>
+              <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+                ApplyWise uses AI to help candidates create ATS-friendly resumes, prep for
+                interviews, and track applications — while helping HR teams screen and rank
+                candidates faster and more accurately.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button size="lg" asChild>
+                  <Link href={audience === "hr" ? "/register?type=hr" : "/register"}>
+                    Get Started Free <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <a href="#cta">
+                    <Calendar className="mr-1 h-4 w-4" /> Book a Demo
+                  </a>
+                </Button>
+              </div>
+              <div className="mt-8 flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {["#7C5CFC", "#4F7CFF", "#22C55E", "#F59E0B"].map((color, i) => (
+                    <div
+                      key={i}
+                      className="h-8 w-8 rounded-full border-2 border-background"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+                <div>
+                  <StarRating />
+                  <p className="text-xs text-muted-foreground">Trusted by 10,000+ users worldwide</p>
+                </div>
+              </div>
             </div>
-            <div className="h-2.5 rounded-full bg-white/10"><div className="h-2.5 w-[92%] rounded-full bg-[#40d899]" /></div>
 
-            <div className="flex items-center justify-between gap-2 text-sm text-white/80">
-              <span>Keywords</span>
-              <span className="font-semibold text-white">90/100</span>
+            <div className="relative mx-auto flex w-full max-w-md flex-col items-start gap-4 xl:max-w-2xl xl:flex-row">
+              <div className="animate-fade-in-up w-full xl:flex-1">
+                <AtsScoreCard label={audience === "hr" ? "Candidate Match Score" : "Resume Score"} />
+              </div>
+              <div className="animate-fade-in-up w-full xl:flex-1 [animation-delay:120ms]">
+                {audience === "hr" ? <HrSideCard /> : <CandidateSideCard />}
+              </div>
             </div>
-            <div className="h-2.5 rounded-full bg-white/10"><div className="h-2.5 w-[90%] rounded-full bg-[#40d899]" /></div>
-
-            <div className="flex items-center justify-between gap-2 text-sm text-white/80">
-              <span>Content</span>
-              <span className="font-semibold text-white">88/100</span>
-            </div>
-            <div className="h-2.5 rounded-full bg-white/10"><div className="h-2.5 w-[88%] rounded-full bg-[#40d899]" /></div>
           </div>
         </div>
+      </section>
 
-        <div className="mt-8 pb-6">
-          <h2 className="text-[32px] font-black leading-[1.05] tracking-[-0.06em] text-white">
-            Everything you need to <span className="text-violet-300">get hired</span> and <span className="text-violet-300">hire top talent</span>
-          </h2>
-        </div>
+      <div className="container flex items-center gap-4 py-12">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
+        <p className="whitespace-nowrap text-center text-lg font-semibold text-foreground">
+          Everything you need to <span className="text-primary">get hired</span> and{" "}
+          <span className="text-primary">hire top talent</span>
+        </p>
+        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
+      </div>
 
-        <section id="features" className="grid grid-cols-2 gap-4 pb-10">
+      <section id="features" className="container pb-20">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
           {featureIcons.map((f, index) => (
             <div
               key={f.title}
-              className="animate-fade-in-up rounded-[20px] border border-white/10 bg-[#121a29]/70 p-4 shadow-[0_12px_24px_rgba(0,0,0,0.18)]"
+              className="animate-fade-in-up text-center"
               style={{ animationDelay: `${index * 80}ms` }}
             >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#8a68f5]/15 text-violet-200">
-                <f.icon className="h-6 w-6" />
+              <div className="animate-glow mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-transform duration-200 hover:scale-105">
+                <f.icon className="h-5 w-5 text-primary" />
               </div>
-              <h3 className="mb-2 text-[20px] font-bold text-white">{f.title}</h3>
-              <p className="text-sm leading-6 text-white/70">{f.desc}</p>
+              <p className="mb-1 text-sm font-semibold text-foreground">{f.title}</p>
+              <p className="text-xs text-muted-foreground">{f.desc}</p>
             </div>
           ))}
-        </section>
-
-        <div className="pb-10">
-          <div className="mx-auto h-1.5 w-20 rounded-full bg-white/20" />
         </div>
-      </div>
+      </section>
+
+      <section className="border-t border-border bg-muted/20 py-20">
+        <div className="container">
+          <h2 className="mb-12 text-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Built for every step of your career &amp; hiring journey
+          </h2>
+
+          <div className="relative grid gap-8 md:grid-cols-2 md:gap-16">
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 items-center justify-center md:flex">
+              <div className="h-px w-full border-t border-dashed border-border" />
+              <div className="absolute flex h-14 w-14 items-center justify-center rounded-full border border-border bg-background shadow-md">
+                <Logo showWordmark={false} />
+              </div>
+            </div>
+
+            <Card id="candidates" className="relative">
+              <CardContent className="p-7">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                  <Target className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="mb-1.5 text-lg font-semibold text-foreground">For Candidates</h3>
+                <p className="mb-5 text-sm text-muted-foreground">
+                  Build better resumes, prepare with confidence, and land your dream job.
+                </p>
+                <ul className="mb-6 space-y-2.5">
+                  {candidateChecklist.map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-foreground">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <Button asChild>
+                  <Link href="/register">
+                    Explore Candidate Features <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card id="hr" className="relative">
+              <CardContent className="p-7">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                  <ListChecks className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="mb-1.5 text-lg font-semibold text-foreground">For HR Teams</h3>
+                <p className="mb-5 text-sm text-muted-foreground">
+                  Screen, rank, and compare candidates with AI — faster and smarter.
+                </p>
+                <ul className="mb-6 space-y-2.5">
+                  {hrChecklist.map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-foreground">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <Button asChild>
+                  <Link href="/register?type=hr">
+                    Explore HR Features <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section className="container py-20">
+        <p className="mb-10 text-center text-sm font-medium text-muted-foreground">
+          Trusted by thousands of candidates and HR teams
+        </p>
+        <div className="mb-14 grid grid-cols-2 gap-8 sm:grid-cols-4">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center">
+              <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                <s.icon className="h-4 w-4 text-primary" />
+              </div>
+              <p className="text-2xl font-bold text-foreground">{s.value}</p>
+              <p className="text-xs text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 opacity-50 grayscale">
+          {trustLogos.map((name) => (
+            <span key={name} className="text-lg font-bold tracking-tight text-foreground">
+              {name}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section id="cta" className="container pb-24">
+        <div className="rounded-2xl border border-border bg-muted/30 p-8 sm:p-12">
+          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+            <div>
+              <h3 className="text-2xl font-bold tracking-tight text-foreground">Ready to take the next step?</h3>
+              <p className="mt-2 text-muted-foreground">
+                Join ApplyWise today and experience the power of AI in your career or hiring journey.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-success" /> No credit card required
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-success" /> Free forever plan
+                </span>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-3">
+              <Button size="lg" asChild>
+                <Link href="/register">
+                  Get Started Free <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <a href="#cta">
+                  <Calendar className="mr-1 h-4 w-4" /> Book a Demo
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-border py-10">
+        <div className="container flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <Logo />
+          <p className="text-sm text-muted-foreground">© 2026 ApplyWise. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
