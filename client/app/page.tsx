@@ -305,9 +305,9 @@ export default function LandingPage() {
 
       <div className="container flex items-center gap-4 py-12">
         <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
-        <p className="whitespace-nowrap text-center text-lg font-semibold text-foreground">
-          Everything you need to <span className="text-primary">get hired</span> and{" "}
-          <span className="text-primary">hire top talent</span>
+        <p className="max-w-[26rem] text-center text-lg font-semibold leading-snug text-foreground sm:max-w-none sm:whitespace-nowrap">
+          Everything you need to <span className="text-primary">get hired</span> and
+          <br className="sm:hidden" /> <span className="text-primary">hire top talent</span>
         </p>
         <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
       </div>
